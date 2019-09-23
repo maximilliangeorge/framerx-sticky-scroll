@@ -1,39 +1,26 @@
 import * as React from "react"
 import { useState, useContext } from "react"
 import { Frame, useTransform, transform, motionValue } from "framer"
-import { ScrollContext } from "./ScrollContainer"
+import { ScrollContext } from "./StickyScroll"
 import { isPlaceholder, renderPlaceholder, getChildProps, clamp } from "./Util"
 
 const tailCache = motionValue(0)
 const headCache = motionValue(0)
 const scrollCache = motionValue(0)
 
-export function Navigation(props) {
+export function StickyTopBar(props) {
 
     if (isPlaceholder()) return renderPlaceholder(props)
 
-    // Params
-
-    /* const offsetFactor = 1
-    const offset = props.height * offsetFactor
-    const threshold = 2 */
     const childProps = getChildProps(props)
 
     // State
 
-    //const [prevY, setPrevY] = useState(0)
-    //const [visible, setVisible] = useState(true)
+    const [transformCache, setTransformCache] = useState(0)
 
     // Context
 
     const { scrollY, navPush } = useContext(ScrollContext)
-
-    function setPush(val) {
-
-      //navPush.set(0)
-      navPush.set(val)
-
-    }
 
     // Transform
 
@@ -50,12 +37,14 @@ export function Navigation(props) {
       const scrolledUp = scroll < scrollCache.get()
 
       if (overscrolled) {
+        navPush.set(0)
         return 0
       }
 
-      if (scroll < props.height) {
-        return 0
-      }
+      const reducer = transform(scroll,
+        [0, props.height],
+        [props.height, 0]
+      )
 
       if (scrolledDown) {
 
@@ -68,7 +57,9 @@ export function Navigation(props) {
 
         scrollCache.set(scroll)
 
-        setPush(props.height - progress * props.height)
+        navPush.set(props.height - reducer - progress * props.height)
+
+        //setTransformCache(scroll - progress * props.height)
 
         return scroll - progress * props.height
 
@@ -85,42 +76,13 @@ export function Navigation(props) {
 
         scrollCache.set(scroll)
 
-        setPush(progress * props.height)
+        navPush.set(progress * props.height - reducer)
+
+        //setTransformCache(scroll - props.height + progress * props.height)
 
         return scroll - props.height + progress * props.height
 
       }
-
-      /* if (overscrolled) {
-
-        return 0
-
-      } else if (scrolledDown) {
-
-        console.log('down', tail, head)
-
-        tailCache.set(scroll)
-        scrollCache.set(scroll)
-
-        navPush.set(head)
-
-        return 0
-
-      } else if (scrolledUp) {
-
-        console.log('up', tail, head)
-
-        const val = tail - scroll - threshold
-        const progress = transform(val, [0, offset], [0, 1])
-
-        navPush.set(clamp(val, [0, offset]))
-
-        headCache.set(scroll)
-        scrollCache.set(scroll)
-
-        return scroll - offset + offset * progress
-
-      } */
 
     })
 

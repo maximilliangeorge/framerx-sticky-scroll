@@ -1,9 +1,9 @@
 import * as React from "react"
 import { useRef, useContext, createContext, useState } from "react"
 import { isPlaceholder, renderPlaceholder, getChildProps } from "./Util"
-import { ScrollContext } from "./ScrollContainer"
+import { ScrollContext } from "./StickyScroll"
 import { SectionContext } from "./StickySection"
-import { Frame, useTransform } from "framer"
+import { Frame, useTransform, transform } from "framer"
 
 export function StickyHeader(props) {
 
@@ -14,27 +14,50 @@ export function StickyHeader(props) {
 
     // Context
 
-    const { scrollY, navPush } = useContext(ScrollContext)
+    const { scrollY, navPush, windowHeight } = useContext(ScrollContext)
 
-    const { setHeaderHeight, sectionHeight, progress } = useContext(SectionContext)
+    const { setHeaderHeight, sectionHeight, progress, offsetTop } = useContext(SectionContext)
 
     setHeaderHeight(props.height)
 
     // State
 
-    const [offsetTop, setOffsetTop] = useState(0)
-    //const [transformY, setTransformY] = useState(0)
-
     const end = sectionHeight - props.height
 
-    const transformY = useTransform(progress, (val) => {
+    const transformY = useTransform(progress, val => {
 
       if (val == 0) {
-        return 0 + navPush.get()
+
+        let t
+
+        if (offsetTop <= 100) {
+
+          t = 0
+
+        } else {
+
+          t = transform(scrollY.get(),
+            [-offsetTop, -offsetTop + navPush.get()],
+            [0, 1]
+          )
+
+        }
+
+        return navPush.get() - navPush.get() * t
+
       } else if (val == 1) {
-        return end
+
+        const t = transform(scrollY.get(),
+          [-offsetTop, -offsetTop + navPush.get()],
+          [0, 1]
+        )
+
+        return end + (navPush.get() * t)
+
       } else {
-        return Math.min(end * val + navPush.get(), end)
+
+        return Math.min((end * val) + navPush.get(), end)
+
       }
 
     })

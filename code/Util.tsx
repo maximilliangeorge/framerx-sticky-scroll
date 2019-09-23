@@ -15,7 +15,8 @@ export function isPlaceholder() {
 }
 
 export function renderPlaceholder(props) {
-    const childProps = props.children[0] ? props.children[0].props : {}
+
+    const childProps = props && props.children[0] ? props.children[0].props : {}
 
     if (props.children.length == 0) {
         return (
@@ -25,13 +26,20 @@ export function renderPlaceholder(props) {
         )
     }
 
-    return <Frame {...childProps}>{props.children}</Frame>
+    return <Frame {...childProps} width={props.width} height={props.height}>{props.children}</Frame>
 }
 
 export function getChildProps(props) {
+
     if (!props) return {}
     if (!props.children) return {}
-    return props.children[0].props
+
+    if (props.children[0].hasOwnProperty('props')) {
+      return props.children[0].props
+    }
+
+    return {}
+
 }
 
 export function clamp(n, m) {

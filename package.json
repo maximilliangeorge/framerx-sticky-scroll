@@ -9,7 +9,10 @@
 		"react": "^16.8"
 	},
 	"framer": {
-		"id": "1d41798b-27ee-4765-a2ee-054e99c7d740"
+		"id": "1d41798b-27ee-4765-a2ee-054e99c7d740",
+		"displayName": "StickyTopMenu"
 	},
-	"author": "Max George"
+	"author": "Max George",
+	"name": "@framer/willandmax.stickytopmenu",
+	"version": "1.1.0"
 }
