@@ -3,6 +3,7 @@ import { useState, useContext } from "react"
 import { Frame, useTransform, transform, motionValue } from "framer"
 import { ScrollContext } from "./StickyScroll"
 import { isPlaceholder, renderPlaceholder, getChildProps, clamp } from "./Util"
+import { Navigation } from "./Navigation"
 
 const tailCache = motionValue(0)
 const headCache = motionValue(0)
@@ -10,9 +11,11 @@ const scrollCache = motionValue(0)
 
 export function StickyTopBar(props) {
 
-    if (isPlaceholder()) return renderPlaceholder(props)
-
-    const childProps = getChildProps(props)
+    if (isPlaceholder()) return (
+      <Frame>
+          <Navigation />
+      </Frame>
+    )
 
     // State
 
@@ -20,7 +23,9 @@ export function StickyTopBar(props) {
 
     // Context
 
-    const { scrollY, navPush } = useContext(ScrollContext)
+    const { scrollY, navPush, setTopBarHeight } = useContext(ScrollContext)
+
+    setTopBarHeight(props.height)
 
     // Transform
 
@@ -59,8 +64,6 @@ export function StickyTopBar(props) {
 
         navPush.set(props.height - reducer - progress * props.height)
 
-        //setTransformCache(scroll - progress * props.height)
-
         return scroll - progress * props.height
 
       }
@@ -87,8 +90,8 @@ export function StickyTopBar(props) {
     })
 
     return (
-        <Frame {...childProps} size={"100%"} y={transformY}>
-            {props.children}
+        <Frame y={transformY} z={1000} style={{zIndex: 1000}}>
+            <Navigation />
         </Frame>
     )
 

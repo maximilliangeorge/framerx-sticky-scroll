@@ -2,7 +2,7 @@ import * as React from "react"
 import { useRef, useContext, useState, useEffect, createContext } from "react"
 import { ScrollContext } from "./StickyScroll"
 import { isPlaceholder, renderPlaceholder, getChildProps } from "./Util"
-import { Frame, useTransform, motionValue, useMotionValue } from "framer"
+import { Frame, useTransform, motionValue, useMotionValue, addPropertyControls, ControlType } from "framer"
 
 export const SectionContext = createContext({
     progress: motionValue(0),
@@ -40,7 +40,7 @@ export function StickySection(props) {
 
     const progress = useTransform(
         scrollY,
-        [-offsetTop, -offsetTop - props.height + headerHeight],
+        [-offsetTop + props.topModifier, -offsetTop + props.topModifier - props.height + headerHeight],
         [0, 1]
     )
 
@@ -56,3 +56,11 @@ export function StickySection(props) {
         </SectionContext.Provider>
     )
 }
+
+StickySection.defaultProps = {
+  topModifier: 0,
+}
+
+addPropertyControls(StickySection, {
+  topModifier: { type: ControlType.Number, title: "Top Offset", displayStepper: false, },
+})

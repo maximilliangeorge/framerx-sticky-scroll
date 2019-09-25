@@ -3,7 +3,7 @@ import { useRef, useContext, createContext, useState } from "react"
 import { isPlaceholder, renderPlaceholder, getChildProps } from "./Util"
 import { ScrollContext } from "./StickyScroll"
 import { SectionContext } from "./StickySection"
-import { Frame, useTransform, transform } from "framer"
+import { Frame, useTransform, transform, addPropertyControls, ControlType } from "framer"
 
 export function StickyHeader(props) {
 
@@ -14,7 +14,7 @@ export function StickyHeader(props) {
 
     // Context
 
-    const { scrollY, navPush, windowHeight } = useContext(ScrollContext)
+    const { scrollY, navPush, windowHeight, topBarHeight } = useContext(ScrollContext)
 
     const { setHeaderHeight, sectionHeight, progress, offsetTop } = useContext(SectionContext)
 
@@ -30,7 +30,7 @@ export function StickyHeader(props) {
 
         let t
 
-        if (offsetTop <= 100) {
+        if (offsetTop <= topBarHeight) {
 
           t = 0
 
